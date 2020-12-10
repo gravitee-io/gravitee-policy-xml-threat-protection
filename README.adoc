@@ -1,4 +1,4 @@
-= XML Threat Protection Policy
+= XML threat protection policy
 
 ifdef::env-github[]
 image:https://ci.gravitee.io/buildStatus/icon?job=gravitee-io/gravitee-policy-xml-threat-protection/master["Build status", link="https://ci.gravitee.io/job/gravitee-io/job/gravitee-policy-xml-threat-protection/"]
@@ -18,8 +18,8 @@ endif::[]
 
 == Description
 
-The XML Threat Protection Policy allows validating xml request body by applying limits on various XML structures (elements, entities, attributes, string values, ...).
-When an invalid request is detected (meaning maximum limit is reached), the request will be considered a threat and rejected with a 400 BAD REQUEST.
+You can use the `xml-threat-protection` policy to validate an XML request body by applying limits on XML structures such as elements, entities, attributes and string values.
+When an invalid request is detected (meaning the limit is reached), the request will be considered a threat and rejected with a 400 BAD REQUEST.
 
 == Configuration
 
@@ -28,19 +28,19 @@ When an invalid request is detected (meaning maximum limit is reached), the requ
 
 .^|maxElements
 ^.^|
-|Maximum number of elements allowed in an xml document. Example: ```<root><a>1</a>2<b></b></root>```, document has 3 elements.
+|Maximum number of elements allowed in an XML document. Example: ```<root><a>1</a>2<b></b></root>``` has 3 elements.
 ^.^|integer (null or -1 to specify no limit)
 ^.^|1000
 
 .^|maxDepth
 ^.^|
-|Maximum depth of xml structure. Example: ```<root><a><b>1</b></a></root>```, xml has a depth of 2.
+|Maximum depth of XML structure. Example: ```<root><a><b>1</b></a></root>``` has a depth of 2.
 ^.^|integer (null or -1 to specify no limit)
 ^.^|100
 
 .^|maxLength
 ^.^|
-|Maximum number of characters allowed for the whole xml document.
+|Maximum number of characters allowed for the whole XML document.
 ^.^|integer (null or -1 to specify no limit)
 ^.^|1000
 
@@ -58,7 +58,7 @@ When an invalid request is detected (meaning maximum limit is reached), the requ
 
 .^|maxChildrenPerElement
 ^.^|
-|Maximum number of child elements for a given element. Example: ```<code><root><a><b>1</b><c>2</c></a></root></code>```, 'a' element has 2 children.
+|Maximum number of child elements for a given element. Example: ```<code><root><a><b>1</b><c>2</c></a></root></code>``` `a` element has 2 children.
 ^.^|integer (null or -1 to specify no limit)
 ^.^|100
 
@@ -70,7 +70,7 @@ When an invalid request is detected (meaning maximum limit is reached), the requ
 
 .^|maxEntities
 ^.^|
-|Maximum number of entity expansions allowed. XML entities are kind of macros and are vulnerable to entity expansion attacks (see https://fr.wikipedia.org/wiki/XML_entity_expansion[entity expansion])
+|Maximum number of entity expansions allowed. XML entities are a type of macro and vulnerable to entity expansion attacks (for more information on XML entity expansion attacks, see https://en.wikipedia.org/wiki/Billion_laughs_attack[Billion laughs attack^]).
 ^.^|integer (null or -1 to specify no limit)
 ^.^|100
 
@@ -82,20 +82,21 @@ When an invalid request is detected (meaning maximum limit is reached), the requ
 
 .^|allowExternalEntities
 ^.^|
-|Allow inclusion of external entities or not. <strong>WARNING</strong>: XML can be vulnerable to https://en.wikipedia.org/wiki/XML_external_entity_attack[XXE Injection], you should enable this feature only when you can really really trust your consumers.
+|Whether to allow inclusion of external entities. WARNING: Since XML can be vulnerable to https://en.wikipedia.org/wiki/XML_external_entity_attack[XXE injection^], only enable this feature if you can really trust your consumers.
 ^.^|boolean
 ^.^|false
 
 |===
 
+== Errors
 
-== Http Status Code
+=== HTTP status code
 
 |===
 |Code |Message
 
 .^| ```400 Bad Request```
-a| In case of:
+a| Applies to:
 
 * Invalid xml structure
 * Maximum xml elements exceeded
@@ -111,13 +112,14 @@ a| In case of:
 
 |===
 
-== Errors
+=== Default response override
 
-If you're looking to override the default response provided by the policy, you can do it
-thanks to the response templates feature. These templates must be define at the API level (see `Response Templates`
-from the `Proxy` menu).
+You can use the response template feature to override the default response provided by the policy. These templates must be defined at the API level (see the API Console *Response Templates*
+option in the API *Proxy* menu).
 
-Here are the error keys send by this policy:
+=== Error keys
+
+The error keys sent by this policy are as follows:
 
 [cols="2*", options="header"]
 |===
