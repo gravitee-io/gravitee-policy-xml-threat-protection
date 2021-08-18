@@ -29,55 +29,55 @@ When an invalid request is detected (meaning the limit is reached), the request 
 .^|maxElements
 ^.^|
 |Maximum number of elements allowed in an XML document. Example: ```<root><a>1</a>2<b></b></root>``` has 3 elements.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|1000
 
 .^|maxDepth
 ^.^|
 |Maximum depth of XML structure. Example: ```<root><a><b>1</b></a></root>``` has a depth of 2.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|maxLength
 ^.^|
 |Maximum number of characters allowed for the whole XML document.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|1000
 
 .^|maxAttributesPerElement
 ^.^|
 |Maximum number of attributes allowed for single XML element.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|maxAttributeValueLength
 ^.^|
 |Maximum length of individual attribute values.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|maxChildrenPerElement
 ^.^|
 |Maximum number of child elements for a given element. Example: ```<code><root><a><b>1</b><c>2</c></a></root></code>``` `a` element has 2 children.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|maxTextValueLength
 ^.^|
 |Maximum length of individual text value.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|maxEntities
 ^.^|
 |Maximum number of entity expansions allowed. XML entities are a type of macro and vulnerable to entity expansion attacks (for more information on XML entity expansion attacks, see https://en.wikipedia.org/wiki/Billion_laughs_attack[Billion laughs attack^]).
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|maxEntityDepth
 ^.^|
 |Maximum depth of nested entity expansions allowed.
-^.^|integer (null or -1 to specify no limit)
+^.^|integer (-1 to specify no limit)
 ^.^|100
 
 .^|allowExternalEntities
