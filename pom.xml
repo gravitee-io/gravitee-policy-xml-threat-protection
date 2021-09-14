@@ -40,7 +40,7 @@
         <junit.version>4.12</junit.version>
         <maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
         <gravitee-gateway-buffer.version>3.0.13</gravitee-gateway-buffer.version>
-        <woodstox.version>6.2.1</woodstox.version>
+        <woodstox.version>6.2.6</woodstox.version>
     </properties>
 
     <dependencies>
