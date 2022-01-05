@@ -17,6 +17,8 @@ package io.gravitee.policy.threatprotection.xml;
 
 import com.ctc.wstx.api.WstxInputProperties;
 import com.ctc.wstx.stax.WstxInputFactory;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.common.http.MediaType;
@@ -33,9 +35,11 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import static io.gravitee.common.http.MediaType.MEDIA_TEXT_XML;
@@ -75,34 +79,48 @@ public class XmlThreatProtectionPolicy {
     private static final Pattern EXCEPTION_PATTERN_MAX_TEXT_VALUE_LENGTH = Pattern.compile(".*Text size limit \\(\\d+\\) exceeded.*", Pattern.CASE_INSENSITIVE);
     private static final Pattern EXCEPTION_PATTERN_EXTERNAL_ENTITY_FORBIDDEN = Pattern.compile(".*Encountered a reference to external entity .* but stream reader has feature \"javax\\.xml\\.stream\\.isSupportingExternalEntities\" disabled.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    private static Map<PolicyConfiguration, XMLInputFactory> factories = new ConcurrentHashMap<>();
+    /**
+     * Number of hours to keep XMLFactories in cache after the last time it was accessed.
+     */
+    private static final int CACHE_EXPIRATION_HOURS = 1;
+
+    /**
+     * Max number of entries in the cache.
+     */
+    private static final int CACHE_MAXIMUM_SIZE = 1000;
+
+    private static final Cache<PolicyConfiguration, XMLInputFactory> factories = CacheBuilder.newBuilder()
+            .maximumSize(CACHE_MAXIMUM_SIZE)
+            .expireAfterAccess(Duration.ofHours(CACHE_EXPIRATION_HOURS)).build();
 
     private final XmlThreatProtectionPolicyConfiguration configuration;
 
     public XmlThreatProtectionPolicy(XmlThreatProtectionPolicyConfiguration configuration) {
         this.configuration = configuration;
-        initializeFactory();
     }
 
-    private void initializeFactory() {
+    private XMLInputFactory getXmlFactory() throws RuntimeException {
 
-        // We can safely associate the factory to a configuration because it should remain unchanged unless full redeployment occurs.
-        // In such a case, ClassLoader (and xml factory) is destroyed and recreated.
-        factories.computeIfAbsent(configuration, policyConfiguration -> {
-            XMLInputFactory xmlFactory = new WstxInputFactory();
-            xmlFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, configuration.isAllowExternalEntities());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, configuration.getMaxAttributeValueLength());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_TEXT_LENGTH, configuration.getMaxTextValueLength());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTES_PER_ELEMENT, configuration.getMaxAttributesPerElement());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHILDREN_PER_ELEMENT, configuration.getMaxChildrenPerElement());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_COUNT, configuration.getMaxElements());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_DEPTH, configuration.getMaxDepth());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_COUNT, configuration.getMaxEntities());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_DEPTH, configuration.getMaxEntityDepth());
-            setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHARACTERS, configuration.getMaxLength());
+        // Factory will be kept in cache until expiration or eviction occurs.
+        try {
+            return factories.get(configuration, () -> {
+                 XMLInputFactory xmlFactory = new WstxInputFactory();
+                 xmlFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, configuration.isAllowExternalEntities());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, configuration.getMaxAttributeValueLength());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_TEXT_LENGTH, configuration.getMaxTextValueLength());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTES_PER_ELEMENT, configuration.getMaxAttributesPerElement());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHILDREN_PER_ELEMENT, configuration.getMaxChildrenPerElement());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_COUNT, configuration.getMaxElements());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_DEPTH, configuration.getMaxDepth());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_COUNT, configuration.getMaxEntities());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_DEPTH, configuration.getMaxEntityDepth());
+                 setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHARACTERS, configuration.getMaxLength());
 
-            return xmlFactory;
-        });
+                 return xmlFactory;
+             });
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @OnRequestContent
@@ -134,7 +152,7 @@ public class XmlThreatProtectionPolicy {
         XMLEventReader xmlEventReader = null;
 
         try {
-            xmlEventReader = factories.get(configuration).createXMLEventReader(new StringReader(xml));
+            xmlEventReader = getXmlFactory().createXMLEventReader(new StringReader(xml));
             while (xmlEventReader.hasNext()) {
                 // Just consume events and wait for an exception in case of violation.
                 xmlEventReader.nextEvent();
