@@ -4,63 +4,75 @@
   "properties": {
     "maxElements": {
       "title": "Maximum xml elements",
-      "description": "Maximum number of elements allowed in an xml document. Example: <code>&lt;root&gt;&lt;a&gt;1&lt;/a&gt;2&lt;b&gt;&lt;/b&gt;&lt;/root&gt;</code>, document has 3 elements.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum number of elements allowed in an xml document. Example: <code>&lt;root&gt;&lt;a&gt;1&lt;/a&gt;2&lt;b&gt;&lt;/b&gt;&lt;/root&gt;</code>, document has 3 elements. (-1 to specify no limit)",
+      "type": "integer",
       "default": 1000
     },
     "maxDepth": {
       "title": "Maximum xml depth",
-      "description": "Maximum depth of xml structure. Example: <code>&lt;root&gt;&lt;a&gt;&lt;b&gt;1&lt;/b&gt;&lt;/a&gt;&lt;/root&gt;</code>, xml has a depth of 2.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum depth of xml structure. Example: <code>&lt;root&gt;&lt;a&gt;&lt;b&gt;1&lt;/b&gt;&lt;/a&gt;&lt;/root&gt;</code>, xml has a depth of 2. (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "maxLength": {
       "title": "Maximum xml length",
-      "description": "Maximum number of characters allowed for the whole xml document.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum number of characters allowed for the whole xml document. (-1 to specify no limit)",
+      "type": "integer",
       "default": 1000
     },
     "maxAttributesPerElement": {
       "title": "Maximum attributes per element",
-      "description": "Maximum number of attributes allowed for single XML element.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum number of attributes allowed for single XML element. (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "maxAttributeValueLength": {
       "title": "Maximum attribute value length",
-      "description": "Maximum length of individual attribute values.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum length of individual attribute values. (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "maxChildrenPerElement": {
       "title": "Maximum children per element",
-      "description": "Maximum number of child elements for a given element. Example: <code>&lt;root&gt;&lt;a&gt;&lt;b&gt;1&lt;/b&gt;&lt;c&gt;2&lt;/c&gt;&lt;/a&gt;&lt;/root&gt;</code>, 'a' element has 2 children.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum number of child elements for a given element. Example: <code>&lt;root&gt;&lt;a&gt;&lt;b&gt;1&lt;/b&gt;&lt;c&gt;2&lt;/c&gt;&lt;/a&gt;&lt;/root&gt;</code>, 'a' element has 2 children. (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "maxTextValueLength": {
       "title": "Maximum text value length",
-      "description": "Maximum length of individual text value.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum length of individual text value. (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "maxEntities": {
       "title": "Maximum xml entities",
-      "description": "Maximum number of entity expansions allowed. XML entities are kind of macros and are vulnerable to entity expansion attacks (see <a href=\"https://fr.wikipedia.org/wiki/XML_entity_expansion\">entity expansion</a>)",
-      "type": [ "integer", "null" ],
+      "description": "Maximum number of entity expansions allowed. XML entities are kind of macros and are vulnerable to entity expansion attacks (see <a href=\"https://fr.wikipedia.org/wiki/XML_entity_expansion\">entity expansion</a>). (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "maxEntityDepth": {
       "title": "Maximum xml entity depth",
-      "description": "Maximum depth of nested entity expansions allowed.",
-      "type": [ "integer", "null" ],
+      "description": "Maximum depth of nested entity expansions allowed. (-1 to specify no limit)",
+      "type": "integer",
       "default": 100
     },
     "allowExternalEntities": {
       "title": "Allow external entities",
-      "description": "Allow inclusion of external entities or not. <strong>WARNING</strong>: XML can be vulnerable to <a href=\"https://en.wikipedia.org/wiki/XML_external_entity_attack\">XXE Injection</a>, you should enable this feature only when you can really really trust your consumers.",
+      "description": "Allow inclusion of external entities or not. <strong>WARNING</strong>: XML can be vulnerable to <a href=\"https://en.wikipedia.org/wiki/XML_external_entity_attack\">XXE Injection</a>, you should enable this feature only when you can really really trust your consumers. (-1 to specify no limit)",
       "type": "boolean",
       "default": false
     }
-  }
+  },
+  "required": [
+    "maxElements",
+    "maxDepth",
+    "maxLength",
+    "maxAttributesPerElement",
+    "maxAttributeValueLength",
+    "maxChildrenPerElement",
+    "maxTextValueLength",
+    "maxEntities",
+    "maxEntityDepth",
+    "allowExternalEntities"
+  ]
 }
