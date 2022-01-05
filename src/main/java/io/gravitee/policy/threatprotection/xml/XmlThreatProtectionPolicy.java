@@ -19,11 +19,11 @@ import com.ctc.wstx.api.WstxInputProperties;
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.common.http.MediaType;
 import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.buffer.Buffer;
+import io.gravitee.gateway.api.http.HttpHeaderNames;
 import io.gravitee.gateway.api.http.stream.TransformableRequestStreamBuilder;
 import io.gravitee.gateway.api.stream.ReadWriteStream;
 import io.gravitee.policy.api.PolicyChain;
@@ -37,8 +37,6 @@ import javax.xml.stream.XMLStreamException;
 import java.io.StringReader;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -126,7 +124,7 @@ public class XmlThreatProtectionPolicy {
     @OnRequestContent
     public ReadWriteStream<Buffer> onRequestContent(Request request, PolicyChain policyChain) {
 
-        if (request.headers().getOrDefault(HttpHeaders.CONTENT_TYPE, Collections.emptyList()).stream().anyMatch(ct -> ct.endsWith(MEDIA_TEXT_XML.getSubtype()))) {
+        if (request.headers().getOrDefault(HttpHeaderNames.CONTENT_TYPE, Collections.emptyList()).stream().anyMatch(ct -> ct.endsWith(MEDIA_TEXT_XML.getSubtype()))) {
             // The policy is only applicable to json content type.
             return TransformableRequestStreamBuilder
                     .on(request)
