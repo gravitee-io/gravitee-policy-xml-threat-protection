@@ -34,7 +34,6 @@ public class XmlException extends Exception {
     }
 
     public String getKey() {
-
         return key;
     }
 }
