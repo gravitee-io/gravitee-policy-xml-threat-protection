@@ -27,7 +27,9 @@ import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.buffer.Buffer;
 import io.gravitee.gateway.api.http.HttpHeaderNames;
 import io.gravitee.gateway.api.http.stream.TransformableRequestStreamBuilder;
+import io.gravitee.gateway.api.stream.BufferedReadWriteStream;
 import io.gravitee.gateway.api.stream.ReadWriteStream;
+import io.gravitee.gateway.api.stream.SimpleReadWriteStream;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.PolicyConfiguration;
 import io.gravitee.policy.api.PolicyResult;
@@ -172,12 +174,24 @@ public class XmlThreatProtectionPolicy {
                 .anyMatch(ct -> ct.endsWith(MEDIA_TEXT_XML.getSubtype()))
         ) {
             // The policy is only applicable to json content type.
-            return TransformableRequestStreamBuilder
-                .on(request)
-                .chain(policyChain)
-                .transform(buffer -> {
+            return new BufferedReadWriteStream() {
+                final Buffer buffer = Buffer.buffer();
+
+                @Override
+                public SimpleReadWriteStream<Buffer> write(Buffer content) {
+                    buffer.appendBuffer(content);
+                    return this;
+                }
+
+                @Override
+                public void end() {
                     try {
                         validateXml(buffer.toString());
+
+                        if (buffer.length() > 0) {
+                            super.write(buffer);
+                        }
+                        super.end();
                     } catch (XmlException e) {
                         policyChain.streamFailWith(
                             PolicyResult.failure(e.getKey(), HttpStatusCode.BAD_REQUEST_400, BAD_REQUEST, MediaType.TEXT_PLAIN)
@@ -187,12 +201,9 @@ public class XmlThreatProtectionPolicy {
                             PolicyResult.failure(HttpStatusCode.INTERNAL_SERVER_ERROR_500, SERVER_ERROR, MediaType.TEXT_PLAIN)
                         );
                     }
-
-                    return buffer;
-                })
-                .build();
+                }
+            };
         }
-
         return null;
     }
 
