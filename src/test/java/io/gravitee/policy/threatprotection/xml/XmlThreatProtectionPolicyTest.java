@@ -15,18 +15,19 @@
  */
 package io.gravitee.policy.threatprotection.xml;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.MediaType;
 import io.gravitee.gateway.api.Request;
-import io.gravitee.gateway.api.Response;
 import io.gravitee.gateway.api.buffer.Buffer;
+import io.gravitee.gateway.api.stream.BufferedReadWriteStream;
 import io.gravitee.gateway.api.stream.ReadWriteStream;
+import io.gravitee.gateway.api.stream.SimpleReadWriteStream;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.PolicyResult;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,7 +77,7 @@ public class XmlThreatProtectionPolicyTest {
         when(request.headers()).thenReturn(new HttpHeaders());
         ReadWriteStream<?> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNull(readWriteStream);
+        assertThat(readWriteStream).isNull();
     }
 
     @Test
@@ -84,10 +85,14 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("<test valid=\"true\">value</test>"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isTrue();
 
         verifyZeroInteractions(policyChain);
     }
@@ -97,10 +102,14 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("Invalid"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -111,10 +120,14 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("<test valid=\"true\">value</test>"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -125,10 +138,13 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("<test valid=\"false\">1234</test>"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -139,7 +155,8 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(
             Buffer.buffer(
@@ -147,6 +164,8 @@ public class XmlThreatProtectionPolicyTest {
             )
         );
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -157,10 +176,13 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("<test><child1></child1><child2></child2></test>"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -171,10 +193,13 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("<test><child><subChild></subChild></child></test>"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -185,7 +210,8 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(
             Buffer.buffer(
@@ -201,6 +227,8 @@ public class XmlThreatProtectionPolicyTest {
         );
         readWriteStream.end();
 
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
+
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
 
@@ -210,7 +238,8 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(
             Buffer.buffer(
@@ -218,6 +247,8 @@ public class XmlThreatProtectionPolicyTest {
             )
         );
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -228,10 +259,13 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         readWriteStream.write(Buffer.buffer("<test><element1 /><element2 /><element3 /></test>"));
         readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
     }
@@ -242,7 +276,8 @@ public class XmlThreatProtectionPolicyTest {
         cut = new XmlThreatProtectionPolicy(configuration);
         ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
 
-        assertNotNull(readWriteStream);
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
 
         // Perform an injection of logback xml file.
         String path = getClass().getResource("/logback-test.xml").getPath();
@@ -258,6 +293,23 @@ public class XmlThreatProtectionPolicyTest {
         );
         readWriteStream.end();
 
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
+
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
+    }
+
+    /**
+     * Replace the endHandler of the resulting ReadWriteStream of the policy execution.
+     * This endHandler will set an {@link AtomicBoolean} to {@code true} if its called.
+     * It will allow us to verify if super.end() has been called on {@link BufferedReadWriteStream#end()}
+     * @param readWriteStream: the {@link ReadWriteStream} to modify
+     * @return an AtomicBoolean set to {@code true} if {@link SimpleReadWriteStream#end()}, else {@code false}
+     */
+    private AtomicBoolean spyEndHandler(ReadWriteStream readWriteStream) {
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = new AtomicBoolean(false);
+        readWriteStream.endHandler(__ -> {
+            hasCalledEndOnReadWriteStreamParentClass.set(true);
+        });
+        return hasCalledEndOnReadWriteStreamParentClass;
     }
 }
