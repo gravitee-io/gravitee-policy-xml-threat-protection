@@ -1,19 +1,4 @@
-/**
- * Copyright (C) 2015 The Gravitee team (http://gravitee.io)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.gravitee.policy.threatprotection.xml;
+package com.graviteesource.policy.threatprotection.xml;
 
 import static io.gravitee.common.http.MediaType.MEDIA_TEXT_XML;
 
@@ -21,15 +6,16 @@ import com.ctc.wstx.api.WstxInputProperties;
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.graviteesource.policy.threatprotection.xml.deployer.XmlThreatProtectionPolicyDeploymentLifecycle;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.common.http.MediaType;
 import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.buffer.Buffer;
 import io.gravitee.gateway.api.http.HttpHeaderNames;
-import io.gravitee.gateway.api.http.stream.TransformableRequestStreamBuilder;
 import io.gravitee.gateway.api.stream.BufferedReadWriteStream;
 import io.gravitee.gateway.api.stream.ReadWriteStream;
 import io.gravitee.gateway.api.stream.SimpleReadWriteStream;
+import io.gravitee.plugin.api.annotations.Plugin;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.PolicyConfiguration;
 import io.gravitee.policy.api.PolicyResult;
@@ -47,6 +33,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Jeoffrey HAEYAERT (jeoffrey.haeyaert at graviteesource.com)
  * @author GraviteeSource Team
  */
+@Plugin(deployment = XmlThreatProtectionPolicyDeploymentLifecycle.class)
 public class XmlThreatProtectionPolicy {
 
     private static final String SERVER_ERROR = "Server error";
