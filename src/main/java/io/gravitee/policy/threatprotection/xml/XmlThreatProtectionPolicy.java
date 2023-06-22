@@ -34,6 +34,7 @@ import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.PolicyConfiguration;
 import io.gravitee.policy.api.PolicyResult;
 import io.gravitee.policy.api.annotations.OnRequestContent;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.time.Duration;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLResolver;
 import javax.xml.stream.XMLStreamException;
 
 /**
@@ -137,6 +139,15 @@ public class XmlThreatProtectionPolicy {
                 configuration,
                 () -> {
                     XMLInputFactory xmlFactory = new WstxInputFactory();
+                    xmlFactory.setXMLResolver(
+                        new XMLResolver() {
+                            @Override
+                            public Object resolveEntity(String publicID, String systemID, String baseURI, String namespace)
+                                throws XMLStreamException {
+                                return InputStream.nullInputStream();
+                            }
+                        }
+                    );
                     xmlFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, configuration.isAllowExternalEntities());
                     setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, configuration.getMaxAttributeValueLength());
                     setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_TEXT_LENGTH, configuration.getMaxTextValueLength());

