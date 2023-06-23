@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.3.2...1.3.3) (2023-06-23)
+
+
+### Bug Fixes
+
+* **xml:** Do not resolve external entities ([5f3f79f](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/commit/5f3f79f3c0e3ea6fee0a5437a4f5388038df0805))
+
 ## [1.3.2](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.3.1...1.3.2) (2022-04-28)
 
 
