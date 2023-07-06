@@ -103,7 +103,7 @@ public class XmlThreatProtectionPolicyTest {
 
         assertThat(hasCalledEndOnReadWriteStreamParentClass).isTrue();
 
-        verifyZeroInteractions(policyChain);
+        verifyNoInteractions(policyChain);
     }
 
     @Test
@@ -351,7 +351,7 @@ public class XmlThreatProtectionPolicyTest {
 
         verify(0, getRequestedFor(urlEqualTo("/evil.dtd")));
         verify(0, getRequestedFor(urlEqualTo("/collector")));
-        verifyZeroInteractions(policyChain);
+        verifyNoInteractions(policyChain);
     }
 
     @Test
