@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.3.3...1.4.0) (2023-07-07)
+
+
+### Features
+
+* add execution phase for proxy api ([9ac2731](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/commit/9ac27310ac441b4604a7d21438a01333e6d47ddb))
+
 ## [1.3.3](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.3.2...1.3.3) (2023-06-23)
 
 
