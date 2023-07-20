@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.4.0...1.4.1) (2023-07-20)
+
+
+### Bug Fixes
+
+* update policy description ([5744728](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/commit/57447283ad555249fe10d86b4e83dc418b07069d))
+
 # [1.4.0](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.3.3...1.4.0) (2023-07-07)
 
 
