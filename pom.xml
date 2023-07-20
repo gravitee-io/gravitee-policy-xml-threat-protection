@@ -25,7 +25,7 @@
     <version>1.4.0</version>
 
     <name>Gravitee.io APIM - Policy - XmlThreatProtection</name>
-    <description>XML threat protection policy</description>
+    <description>Validate an XML payload by applying limits on XML structures such as elements, entities, attributes and string values</description>
 
     <parent>
         <groupId>io.gravitee</groupId>
