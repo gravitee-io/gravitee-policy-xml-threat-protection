@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.4.1...1.5.0) (2023-12-19)
+
+
+### Features
+
+* enable policy on REQUEST phase for message APIs ([a607f1a](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/commit/a607f1ab723fe964b123f5c12ba22111895bac7f)), closes [gravitee-io/issues#9430](https://github.com/gravitee-io/issues/issues/9430)
+
 ## [1.4.1](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.4.0...1.4.1) (2023-07-20)
 
 
