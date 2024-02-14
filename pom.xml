@@ -44,7 +44,7 @@
 
         <maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
         <woodstox.version>6.2.1</woodstox.version>
-        <guava.version>30.1.1-jre</guava.version>
+        <guava.version>32.1.2-jre</guava.version>
         <!-- Property used by the publication job in CI-->
         <publish-folder-path>graviteeio-apim/plugins/policies</publish-folder-path>
     </properties>
