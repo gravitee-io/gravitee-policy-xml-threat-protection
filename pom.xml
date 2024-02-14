@@ -44,6 +44,7 @@
 
         <maven-assembly-plugin.version>2.5.5</maven-assembly-plugin.version>
         <woodstox.version>6.6.0</woodstox.version>
+        <wiremock.version>3.3.1</wiremock.version>
         <guava.version>32.1.2-jre</guava.version>
         <!-- Property used by the publication job in CI-->
         <publish-folder-path>graviteeio-apim/plugins/policies</publish-folder-path>
@@ -120,13 +121,24 @@
             <artifactId>gravitee-apim-gateway-tests-sdk</artifactId>
             <version>${gravitee-apim-gateway-tests-sdk.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.wiremock</groupId>
+                    <artifactId>wiremock-jre8</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
