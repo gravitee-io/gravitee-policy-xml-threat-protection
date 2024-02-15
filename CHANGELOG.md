@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.5.0...1.5.1) (2024-02-15)
+
+
+### Bug Fixes
+
+* update woodstox to 6.6.0 ([3ac68d5](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/commit/3ac68d5898f74eab0d55e919543c31729fc6147f))
+
 # [1.5.0](https://github.com/gravitee-io/gravitee-policy-xml-threat-protection/compare/1.4.1...1.5.0) (2023-12-19)
 
 
