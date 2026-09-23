@@ -120,8 +120,7 @@ public class XmlThreatProtectionPolicy {
      */
     private static final int CACHE_MAXIMUM_SIZE = 1000;
 
-    private static final Cache<PolicyConfiguration, XMLInputFactory> factories = CacheBuilder
-        .newBuilder()
+    private static final Cache<PolicyConfiguration, XMLInputFactory> factories = CacheBuilder.newBuilder()
         .maximumSize(CACHE_MAXIMUM_SIZE)
         .expireAfterAccess(Duration.ofHours(CACHE_EXPIRATION_HOURS))
         .build();
@@ -135,41 +134,34 @@ public class XmlThreatProtectionPolicy {
     private XMLInputFactory getXmlFactory() throws RuntimeException {
         // Factory will be kept in cache until expiration or eviction occurs.
         try {
-            return factories.get(
-                configuration,
-                () -> {
-                    XMLInputFactory xmlFactory = new WstxInputFactory();
-                    xmlFactory.setXMLResolver(
-                        new XMLResolver() {
-                            @Override
-                            public Object resolveEntity(String publicID, String systemID, String baseURI, String namespace)
-                                throws XMLStreamException {
-                                return InputStream.nullInputStream();
-                            }
+            return factories.get(configuration, () -> {
+                XMLInputFactory xmlFactory = new WstxInputFactory();
+                xmlFactory.setXMLResolver(
+                    new XMLResolver() {
+                        @Override
+                        public Object resolveEntity(String publicID, String systemID, String baseURI, String namespace)
+                            throws XMLStreamException {
+                            return InputStream.nullInputStream();
                         }
-                    );
-                    xmlFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, configuration.isAllowExternalEntities());
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, configuration.getMaxAttributeValueLength());
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_TEXT_LENGTH, configuration.getMaxTextValueLength());
-                    setXmlFactoryProperty(
-                        xmlFactory,
-                        WstxInputProperties.P_MAX_ATTRIBUTES_PER_ELEMENT,
-                        configuration.getMaxAttributesPerElement()
-                    );
-                    setXmlFactoryProperty(
-                        xmlFactory,
-                        WstxInputProperties.P_MAX_CHILDREN_PER_ELEMENT,
-                        configuration.getMaxChildrenPerElement()
-                    );
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_COUNT, configuration.getMaxElements());
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_DEPTH, configuration.getMaxDepth());
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_COUNT, configuration.getMaxEntities());
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_DEPTH, configuration.getMaxEntityDepth());
-                    setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHARACTERS, configuration.getMaxLength());
+                    }
+                );
+                xmlFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, configuration.isAllowExternalEntities());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, configuration.getMaxAttributeValueLength());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_TEXT_LENGTH, configuration.getMaxTextValueLength());
+                setXmlFactoryProperty(
+                    xmlFactory,
+                    WstxInputProperties.P_MAX_ATTRIBUTES_PER_ELEMENT,
+                    configuration.getMaxAttributesPerElement()
+                );
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHILDREN_PER_ELEMENT, configuration.getMaxChildrenPerElement());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_COUNT, configuration.getMaxElements());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ELEMENT_DEPTH, configuration.getMaxDepth());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_COUNT, configuration.getMaxEntities());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_ENTITY_DEPTH, configuration.getMaxEntityDepth());
+                setXmlFactoryProperty(xmlFactory, WstxInputProperties.P_MAX_CHARACTERS, configuration.getMaxLength());
 
-                    return xmlFactory;
-                }
-            );
+                return xmlFactory;
+            });
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
