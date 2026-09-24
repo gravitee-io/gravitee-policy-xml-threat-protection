@@ -37,7 +37,7 @@
         <gravitee-apim-gateway-tests-sdk.version>3.20.32</gravitee-apim-gateway-tests-sdk.version>
         <gravitee-bom.version>3.0.36</gravitee-bom.version>
         <gravitee-common.version>2.3.0</gravitee-common.version>
-        <gravitee-gateway-api.version>2.1.0</gravitee-gateway-api.version>
+        <gravitee-gateway-api.version>6.4.0</gravitee-gateway-api.version>
         <gravitee-policy-api.version>1.11.0</gravitee-policy-api.version>
 
         <woodstox.version>6.6.0</woodstox.version>
